@@ -32,11 +32,11 @@ class ValueIterationAgent(ValueEstimationAgent):
           and then act according to the resulting policy.
 
           Some useful mdp methods you will use:
-              mdp.getStates()
-              mdp.getPossibleActions(state)
-              mdp.getTransitionStatesAndProbs(state, action)
-              mdp.getReward(state, action, nextState)
-              mdp.isTerminal(state)
+              mdp.getStates(): list of all states in the MDP
+              mdp.getPossibleActions(state): list of possible actions from 'state'
+              mdp.getTransitionStatesAndProbs(state, action): list of (nextState, prob) pairs
+              mdp.getReward(state, action, nextState): reward for the state, action, nextState transition
+              mdp.isTerminal(state): true if the current state is a terminal state
         """
         self.mdp = mdp
         self.discount = discount
@@ -46,16 +46,17 @@ class ValueIterationAgent(ValueEstimationAgent):
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
         states = mdp.getStates()
+        actionVal = 0
         while iterations != 0: 
             for state in states:
                 stateVal = []
                 actions = mdp.getPossibleActions(state)
                 for action in actions:
-                    actionVal = []
                     transitions = mdp.getTransitionStatesAndProbs(state, action)
                     for nextState, prob in transistions:
-                        actionVal.append(prob*(mdp.getReward(state, action, nextState)+discount*self.values[state]))
-                    stateVal.append(sum(actionVal))
+                        actionVal += prob*(mdp.getReward(state, action, nextState)+discount*self.values[state])
+                    stateVal.append(actionVal)
+                    actionVal = 0
                 self.values[state] = max(stateVal)
             iterations -= 1
 
@@ -73,9 +74,9 @@ class ValueIterationAgent(ValueEstimationAgent):
         """
         "*** YOUR CODE HERE ***"
         actionVal = []
-        transistions = mdp.getTransitionStatesAndProbs(state, action)
+        transitions = self.mdp.getTransitionStatesAndProbs(state, action)
         for nextState, prob in transitions:
-            actionVal.append(prob*(mdp.getReward(state, action, nextState)+discount*self.values[state]))
+            actionVal.append(prob*(self.mdp.getReward(state, action, nextState)+self.discount*self.values[state]))
         return sum(actionVal)
         #util.raiseNotDefined()
 
@@ -90,10 +91,10 @@ class ValueIterationAgent(ValueEstimationAgent):
         """
         "*** YOUR CODE HERE ***"
         val = -1000
-        if self.isTerminal(state):
+        if self.values[state] == 0:
             return None
         else:
-            actions = mdp.getPossibleActions(state)
+            actions = self.mdp.getPossibleActions(state)
             for action in actions:
                 actionVal = computeQValueFromValues(state, action)
                 if actionVal > val:
