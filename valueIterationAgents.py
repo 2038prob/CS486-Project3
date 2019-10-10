@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -47,7 +47,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         "*** YOUR CODE HERE ***"
         states = mdp.getStates()
         actionVal = 0
-        while iterations != 0: 
+        while iterations != 0:
             for state in states:
                 stateVal = []
                 actions = mdp.getPossibleActions(state)
@@ -57,7 +57,10 @@ class ValueIterationAgent(ValueEstimationAgent):
                         actionVal += prob*(mdp.getReward(state, action, nextState)+discount*self.values[state])
                     stateVal.append(actionVal)
                     actionVal = 0
-                self.values[state] = max(stateVal)
+                if len(stateVal) == 0:
+                    return None
+                else:
+                    self.values[state] = max(stateVal)
             iterations -= 1
 
     def getValue(self, state):
