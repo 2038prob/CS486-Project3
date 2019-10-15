@@ -45,22 +45,24 @@ class ValueIterationAgent(ValueEstimationAgent):
 
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
-        states = mdp.getStates()
-        actionVal = 0
+        states = self.mdp.getStates()
         while iterations != 0:
+            tempTable = util.Counter()
             for state in states:
                 stateVal = []
-                actions = mdp.getPossibleActions(state)
+                actions = self.mdp.getPossibleActions(state)
                 for action in actions:
-                    transitions = mdp.getTransitionStatesAndProbs(state, action)
-                    for nextState, prob in transistions:
-                        actionVal += prob*(mdp.getReward(state, action, nextState)+discount*self.values[state])
-                    stateVal.append(actionVal)
                     actionVal = 0
-                if len(stateVal) == 0:
-                    return None
+                    transitions = self.mdp.getTransitionStatesAndProbs(state, action)
+                    for nextState, prob in transitions:
+                        actionVal += prob*(self.mdp.getReward(state, action, nextState)+self.discount*self.values[nextState])
+                    stateVal.append(actionVal)
+                if self.mdp.isTerminal(state):
+                    pass
                 else:
                     self.values[state] = max(stateVal)
+            for state in states:
+                self.values[state] = tempTable[state]
             iterations -= 1
 
     def getValue(self, state):
@@ -76,11 +78,11 @@ class ValueIterationAgent(ValueEstimationAgent):
           value function stored in self.values.
         """
         "*** YOUR CODE HERE ***"
-        actionVal = []
+        actionVal = 0
         transitions = self.mdp.getTransitionStatesAndProbs(state, action)
         for nextState, prob in transitions:
-            actionVal.append(prob*(self.mdp.getReward(state, action, nextState)+self.discount*self.values[state]))
-        return sum(actionVal)
+            actionVal+=prob*(self.mdp.getReward(state, action, nextState)+self.discount*self.values[nextState])
+        return actionVal
         #util.raiseNotDefined()
 
     def computeActionFromValues(self, state):
@@ -93,16 +95,14 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
-        val = -1000
-        if self.values[state] == 0:
-            return None
-        else:
-            actions = self.mdp.getPossibleActions(state)
-            for action in actions:
-                actionVal = computeQValueFromValues(state, action)
-                if actionVal > val:
-                    val = actionVal
-                    bestAction = action
+        val = -2**16
+        bestAction = None
+        actions = self.mdp.getPossibleActions(state)
+        for action in actions:
+            actionVal = self.computeQValueFromValues(state, action)
+            if actionVal > val:
+                val = actionVal
+                bestAction = action
         return bestAction
         #util.raiseNotDefined()
 
