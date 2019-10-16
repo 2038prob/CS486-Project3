@@ -60,7 +60,7 @@ class ValueIterationAgent(ValueEstimationAgent):
                 if self.mdp.isTerminal(state):
                     pass
                 else:
-                    self.values[state] = max(stateVal)
+                    tempTable[state] = max(stateVal)
             for state in states:
                 self.values[state] = tempTable[state]
             iterations -= 1
@@ -98,11 +98,14 @@ class ValueIterationAgent(ValueEstimationAgent):
         val = -2**16
         bestAction = None
         actions = self.mdp.getPossibleActions(state)
-        for action in actions:
-            actionVal = self.computeQValueFromValues(state, action)
-            if actionVal > val:
-                val = actionVal
-                bestAction = action
+        if len(actions) == 0:
+            pass
+        else:
+            for action in actions:
+                actionVal = self.computeQValueFromValues(state, action)
+                if actionVal > val:
+                    val = actionVal
+                    bestAction = action
         return bestAction
         #util.raiseNotDefined()
 
