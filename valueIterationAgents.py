@@ -13,6 +13,7 @@
 
 
 import mdp, util
+import math
 
 from learningAgents import ValueEstimationAgent
 
@@ -95,7 +96,7 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
-        val = -2**16
+        val = -math.inf
         bestAction = None
         actions = self.mdp.getPossibleActions(state)
         if len(actions) == 0:
