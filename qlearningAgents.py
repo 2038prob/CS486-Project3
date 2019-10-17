@@ -86,12 +86,9 @@ class QLearningAgent(ReinforcementAgent):
         "*** YOUR CODE HERE ***"
         legalActions = self.getLegalActions(state)
         bestAction = [None]
-        print(legalActions)
-        if legalActions == ():
-            return None
         for action in legalActions:
             qVal = self.getQValue(state, action)
-            if qVal > self.getQValue(state, bestAction[0]):
+            if qVal > self.getQValue(state, bestAction[0]) or bestAction[0] == None:
                 bestAction = [action]
             elif qVal == self.getQValue(state, bestAction[0]):
                 bestAction.append(action)
